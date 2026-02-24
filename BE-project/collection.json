@@ -1,0 +1,139 @@
+{
+  "info": {
+    "name": "Home Improvement Tracker",
+    "_postman_id": "b1fcb7ec-8c8e-4b58-9fcb-123456789abc",
+    "description": "APIs for Home Improvement Tracker backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register User",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john@example.com\",\n    \"password\": \"123456\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": { "raw": "http://localhost:5000/api/auth/register", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api","auth","register"] }
+      }
+    },
+    {
+      "name": "Login User",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"john@example.com\",\n    \"password\": \"123456\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": { "raw": "http://localhost:5000/api/auth/login", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api","auth","login"] }
+      }
+    },
+    {
+      "name": "Create Project",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+          { "key": "Content-Type", "value": "application/json", "type": "text" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Kitchen Remodel\",\n    \"description\": \"New kitchen renovation\",\n    \"budget\": 5000,\n    \"deadline\": \"2026-04-30\",\n    \"status\": \"ongoing\"\n}"
+        },
+        "url": { "raw": "http://localhost:5000/api/projects", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api","projects"] }
+      }
+    },
+    {
+      "name": "List Projects",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+        ],
+        "url": { "raw": "http://localhost:5000/api/projects", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api","projects"] }
+      }
+    },
+    {
+      "name": "Add Task",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+          { "key": "Content-Type", "value": "application/json", "type": "text" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"project_id\": 1,\n    \"title\": \"Buy cabinets\",\n    \"description\": \"Purchase kitchen cabinets\",\n    \"status\": \"pending\",\n    \"assignee\": \"John\",\n    \"due_date\": \"2026-03-05\"\n}"
+        },
+        "url": { "raw": "http://localhost:5000/api/tasks", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api","tasks"] }
+      }
+    },
+    {
+      "name": "List Tasks",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+        ],
+        "url": { "raw": "http://localhost:5000/api/tasks?project_id=1", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api","tasks"], "query": [{ "key": "project_id", "value": "1" }] }
+      }
+    },
+    {
+      "name": "Add Expense",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+          { "key": "Content-Type", "value": "application/json", "type": "text" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"project_id\": 1,\n    \"description\": \"Cabinets purchase\",\n    \"amount\": 2000,\n    \"date\": \"2026-03-01\"\n}"
+        },
+        "url": { "raw": "http://localhost:5000/api/expenses", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api","expenses"] }
+      }
+    },
+    {
+      "name": "List Expenses",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+        ],
+        "url": { "raw": "http://localhost:5000/api/expenses?project_id=1", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api","expenses"], "query": [{ "key": "project_id", "value": "1" }] }
+      }
+    },
+    {
+      "name": "Add Contractor",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+          { "key": "Content-Type", "value": "application/json", "type": "text" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Mike Builder\",\n    \"phone\": \"1234567890\",\n    \"email\": \"mike@builders.com\",\n    \"notes\": \"Kitchen contractor\"\n}"
+        },
+        "url": { "raw": "http://localhost:5000/api/contractors", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api","contractors"] }
+      }
+    },
+    {
+      "name": "List Contractors",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+        ],
+        "url": { "raw": "http://localhost:5000/api/contractors", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api","contractors"] }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "token", "value": "" }
+  ]
+}
