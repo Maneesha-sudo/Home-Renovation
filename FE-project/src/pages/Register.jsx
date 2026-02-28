@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { authAPI } from "../services/api";
-import toast from "react-hot-toast";
+// For the axios instance and all APIs
+import api, { authAPI, projectAPI, expenseAPI, taskAPI, contractorAPI } from '../services/api';import toast from "react-hot-toast";
 
 const Register = () => {
   const navigate = useNavigate();

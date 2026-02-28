@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { BarChart3, DollarSign, CheckCircle, Users, Plus } from 'lucide-react';
-import API from '../api/axios';
+import api, { expenseAPI } from '../services/api';
 
 const Dashboard = () => {
   const [projects, setProjects] = useState([]);
@@ -11,12 +11,13 @@ const Dashboard = () => {
     totalTasks: 0,
     completedTasks: 0
   });
+  
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await API.get("/api/projects");
+        const res = await api.get("/projects");
         const projectsData = res.data.projects || [];
         setProjects(projectsData);
 

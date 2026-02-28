@@ -4,32 +4,24 @@ const supabase = require('../config/supabaseClient');
 // Add new expense
 const addExpense = async (req, res) => {
   try {
-    console.log("started expenses");
-    
-    // const user_id= req.user.id; 
-    const { title, amount, category } = req.body;
+    const { title, amount, category, project_id } = req.body;
 
-    // Basic validation
-    if (!title || !amount) {
-      return res.status(400).json({ message: 'Project, title, and amount are required' });
+    // Validation
+    if (!title || !amount || !project_id) {
+      return res.status(400).json({ message: 'Project ID, title, and amount are required' });
     }
-  
+    console.log("data", data);
 
     const expense = {
+      user_id: req.user.id,          // associate with logged-in user
+      project_id,
       title,
       amount: parseFloat(amount),
       category: category || 'Materials',
-      // date: date || new Date().toISOString().split('T')[0],
-      created_at: new Date().toISOString()
-      // updated_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     };
 
     const { data, error } = await supabase.from('expenses').insert([expense]).select();
-    console.log("expense data", data);
-    console.log(" occurred", error);
-    
-
-    
 
     if (error) {
       console.error('Supabase Insert Error:', error);
@@ -43,7 +35,7 @@ const addExpense = async (req, res) => {
   }
 };
 
-// List all expenses for a project
+// List all expenses for a project (only for the logged-in user)
 const listExpenses = async (req, res) => {
   try {
     const { project_id } = req.query;
@@ -67,7 +59,7 @@ const listExpenses = async (req, res) => {
   }
 };
 
-// Delete an expense
+// Delete an expense (only if owned by the logged-in user)
 const deleteExpense = async (req, res) => {
   try {
     const { id } = req.params;
@@ -76,14 +68,14 @@ const deleteExpense = async (req, res) => {
       .from('expenses')
       .delete()
       .eq('id', id)
-      .eq('user_id', req.user.id); // only allow user to delete their own expense
+      .eq('user_id', req.user.id);
 
     if (error) {
       console.error('Supabase Delete Error:', error);
       return res.status(500).json({ message: error.message });
     }
 
-    if (data.length === 0) {
+    if (!data || data.length === 0) {
       return res.status(404).json({ message: 'Expense not found' });
     }
 

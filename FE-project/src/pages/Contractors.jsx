@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import ContractorCard from "../components/ContractorCard";
 import toast from "react-hot-toast";
-import { contractorAPI } from "../services/api";
-
+// For the axios instance and all APIs
+import api, { authAPI, projectAPI, expenseAPI, taskAPI, contractorAPI } from '../services/api';
 export default function Contractors() {
   const [contractors, setContractors] = useState([]);
   const [loading, setLoading] = useState(true);

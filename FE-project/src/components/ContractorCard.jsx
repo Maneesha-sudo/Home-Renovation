@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { contractorAPI } from "../services/api";
-import toast from "react-hot-toast";
+// For the axios instance and all APIs
+import api, { authAPI, projectAPI, expenseAPI, taskAPI, contractorAPI } from '../services/api';import toast from "react-hot-toast";
 
 export default function ContractorCard({ contractor, onUpdate, onDelete }) {
   const [editing, setEditing] = useState(false);
