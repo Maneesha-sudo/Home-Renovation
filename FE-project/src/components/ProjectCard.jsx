@@ -1,21 +1,20 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function ProjectCard({ project }) {
-  const navigate = useNavigate();
-
   return (
-    <div
-      className="bg-white shadow-md rounded p-4 cursor-pointer hover:shadow-xl transition"
-      onClick={() => navigate(`/project/${project.id}`)}
-    >
-      <h2 className="font-bold text-lg">{project.name}</h2>
-      <p className="text-sm text-gray-500">
-        Deadline: {new Date(project.deadline).toLocaleDateString()}
-      </p>
-      <p className="text-sm">
-        Status: <span className="font-medium">{project.status}</span>
-      </p>
-    </div>
+    <Link to={`/projects/${project.id}`}>
+      <div className="bg-white rounded-3xl shadow-md hover:shadow-xl transition duration-300 p-6">
+        <div className="h-48 bg-gray-200 rounded-2xl mb-4" />
+        <h3 className="text-xl font-semibold">{project.title}</h3>
+        <p className="text-gray-500">Budget: ₹{project.budget}</p>
+
+        <div className="w-full bg-gray-200 h-2 rounded-full mt-4">
+          <div
+            className="bg-green-500 h-2 rounded-full"
+            style={{ width: `${project.progress}%` }}
+          />
+        </div>
+      </div>
+    </Link>
   );
 }

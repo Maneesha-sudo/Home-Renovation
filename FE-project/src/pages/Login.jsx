@@ -1,75 +1,102 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import API from "../api/axiosConfig";
+import { authAPI } from "../services/api";
+import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
 
-export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+const Login = () => {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth(); // ✅ moved inside component
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setLoading(true);
 
     try {
-      const res = await API.post("/api/auth/login", { email, password });
+      const { data } = await authAPI.login(formData);
 
-      // Store only token
-      localStorage.setItem("token", res.data.token);
+      // ✅ Use context login
+      login(data.token, data.user);
 
-      // Clear form
-      setEmail("");
-      setPassword("");
-
+      toast.success("Welcome back!");
       navigate("/dashboard");
-    } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Login failed."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white p-6 rounded shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
-        {error && <p className="text-red-500 mb-2">{error}</p>}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-6 space-y-6">
+        <div className="text-center space-y-3">
+          <h1 className="text-3xl font-bold text-gray-900">
+            Home Tracker
+          </h1>
+          <p className="text-gray-600 text-sm">
+            Sign in to your account
+          </p>
+        </div>
 
-        {/* 👇 autoComplete OFF added */}
-        <form onSubmit={handleLogin} className="flex flex-col" autoComplete="off">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"
-            name="email"
             placeholder="Email"
-            value={email}
-            autoComplete="off"
-            onChange={(e) => setEmail(e.target.value)}
-            className="p-2 border mb-4 rounded"
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                email: e.target.value,
+              })
+            }
+            className="w-full p-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
             required
           />
 
           <input
             type="password"
-            name="password"
             placeholder="Password"
-            value={password}
-            autoComplete="new-password"
-            onChange={(e) => setPassword(e.target.value)}
-            className="p-2 border mb-4 rounded"
+            value={formData.password}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                password: e.target.value,
+              })
+            }
+            className="w-full p-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
             required
           />
 
-          <button className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">
-            Login
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-xl font-semibold hover:opacity-90 transition"
+          >
+            {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
 
-        <p className="text-sm mt-4 text-center">
-          Don't have an account?{" "}
-          <Link to="/register" className="text-blue-600 hover:underline">
-            Register
+        <p className="text-center text-sm text-gray-600">
+          Don’t have an account?{" "}
+          <Link
+            to="/register"
+            className="text-indigo-600 font-semibold"
+          >
+            Sign up
           </Link>
         </p>
       </div>
     </div>
   );
-}
+};
+
+export default Login;

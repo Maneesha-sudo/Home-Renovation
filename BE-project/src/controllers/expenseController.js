@@ -1,25 +1,97 @@
+// src/controllers/expenseController.js
 const supabase = require('../config/supabaseClient');
 
+// Add new expense
 const addExpense = async (req, res) => {
   try {
-    const expense = { ...req.body };
-    const { data, error } = await supabase.from('expenses').insert([expense]);
-    if (error) return res.status(500).json({ message: error.message });
+    console.log("started expenses");
+    
+    // const user_id= req.user.id; 
+    const { title, amount, category } = req.body;
+
+    // Basic validation
+    if (!title || !amount) {
+      return res.status(400).json({ message: 'Project, title, and amount are required' });
+    }
+  
+
+    const expense = {
+      title,
+      amount: parseFloat(amount),
+      category: category || 'Materials',
+      // date: date || new Date().toISOString().split('T')[0],
+      created_at: new Date().toISOString()
+      // updated_at: new Date().toISOString(),
+    };
+
+    const { data, error } = await supabase.from('expenses').insert([expense]).select();
+    console.log("expense data", data);
+    console.log(" occurred", error);
+    
+
+    
+
+    if (error) {
+      console.error('Supabase Insert Error:', error);
+      return res.status(500).json({ message: error.message });
+    }
+
     res.status(201).json({ expense: data[0] });
   } catch (err) {
+    console.error('Add Expense Error:', err);
     res.status(500).json({ message: err.message });
   }
 };
 
+// List all expenses for a project
 const listExpenses = async (req, res) => {
   try {
     const { project_id } = req.query;
-    const { data, error } = await supabase.from('expenses').select('*').eq('project_id', project_id);
-    if (error) return res.status(500).json({ message: error.message });
+    if (!project_id) return res.status(400).json({ message: 'project_id query param is required' });
+
+    const { data, error } = await supabase
+      .from('expenses')
+      .select('*')
+      .eq('project_id', project_id)
+      .eq('user_id', req.user.id); // only user's own expenses
+
+    if (error) {
+      console.error('Supabase Select Error:', error);
+      return res.status(500).json({ message: error.message });
+    }
+
     res.json({ expenses: data });
   } catch (err) {
+    console.error('List Expenses Error:', err);
     res.status(500).json({ message: err.message });
   }
 };
 
-module.exports = { addExpense, listExpenses };
+// Delete an expense
+const deleteExpense = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { data, error } = await supabase
+      .from('expenses')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', req.user.id); // only allow user to delete their own expense
+
+    if (error) {
+      console.error('Supabase Delete Error:', error);
+      return res.status(500).json({ message: error.message });
+    }
+
+    if (data.length === 0) {
+      return res.status(404).json({ message: 'Expense not found' });
+    }
+
+    res.json({ message: 'Expense deleted successfully' });
+  } catch (err) {
+    console.error('Delete Expense Error:', err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+module.exports = { addExpense, listExpenses, deleteExpense };

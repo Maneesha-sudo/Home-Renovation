@@ -1,48 +1,61 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import API from "../api/axiosConfig";
+import { authAPI } from "../services/api";
+import toast from "react-hot-toast";
 
-export default function Register() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+const Register = () => {
   const navigate = useNavigate();
 
-  const handleRegister = async (e) => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setLoading(true);
 
     try {
-      await API.post("/api/auth/register", { name, email, password });
+      await authAPI.register(formData);
 
-      // Clear form after success
-      setName("");
-      setEmail("");
-      setPassword("");
-
+      toast.success("Account created successfully!");
       navigate("/login");
-    } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
+    } catch (error) {
+      console.log("Register Error:", error.response?.data);
+      toast.error(
+        error.response?.data?.message || "Registration failed."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white p-6 rounded shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-bold mb-4 text-center">Register</h2>
-        {error && <p className="text-red-500 mb-2">{error}</p>}
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6">
+        <h2 className="text-2xl font-bold mb-4 text-center">
+          Create Account
+        </h2>
 
-        {/* 👇 autoComplete OFF added */}
-        <form onSubmit={handleRegister} className="flex flex-col" autoComplete="off">
+        <form onSubmit={handleSubmit} className="space-y-4">
+
           <input
             type="text"
-            name="name"
-            placeholder="Name"
-            value={name}
-            autoComplete="off"
-            onChange={(e) => setName(e.target.value)}
-            className="p-2 border mb-4 rounded"
+            name="name"   // ✅ VERY IMPORTANT
+            placeholder="Full Name"
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-lg"
             required
           />
 
@@ -50,10 +63,9 @@ export default function Register() {
             type="email"
             name="email"
             placeholder="Email"
-            value={email}
-            autoComplete="off"
-            onChange={(e) => setEmail(e.target.value)}
-            className="p-2 border mb-4 rounded"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-lg"
             required
           />
 
@@ -61,25 +73,31 @@ export default function Register() {
             type="password"
             name="password"
             placeholder="Password"
-            value={password}
-            autoComplete="new-password"
-            onChange={(e) => setPassword(e.target.value)}
-            className="p-2 border mb-4 rounded"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-lg"
             required
           />
 
-          <button className="bg-green-600 text-white p-2 rounded hover:bg-green-700">
-            Register
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-indigo-600 text-white py-3 rounded-lg"
+          >
+            {loading ? "Creating..." : "Register"}
           </button>
+
         </form>
 
-        <p className="text-sm mt-4 text-center">
+        <p className="text-center text-sm mt-4">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-600 hover:underline">
+          <Link to="/login" className="text-indigo-600">
             Login
           </Link>
         </p>
       </div>
     </div>
   );
-}
+};
+
+export default Register;

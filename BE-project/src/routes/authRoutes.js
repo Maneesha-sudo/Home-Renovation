@@ -1,11 +1,23 @@
+// const express = require('express');
+// const router = express.Router();
+// const { register, login } = require('../controllers/authController');
+
+// router.post('/register', register);
+// router.post('/login', login);
+// module.exports = router;
+
 const express = require('express');
 const router = express.Router();
 const { register, login } = require('../controllers/authController');
+const { authenticate } = require('../utils/authMiddleware'); // ✅ fixed path
 
 router.post('/register', register);
 router.post('/login', login);
 
-
+router.get('/me', authenticate, (req, res) => {
+  res.json({
+    user: req.user
+  });
+});
 
 module.exports = router;
-

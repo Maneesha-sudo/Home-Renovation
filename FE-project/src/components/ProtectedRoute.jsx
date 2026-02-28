@@ -1,14 +1,21 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
+import { useContext } from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
-const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem("token");
+export default function ProtectedRoute({ children }) {
+  const { user, loading } = useContext(AuthContext);
 
-  if (!token) {
-    return <Navigate to="/login" replace />;
+  // Show loading spinner while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+      </div>
+    );
   }
 
-  return children;
-};
+  // ✅ Render children if passed, else Outlet for nested routes
+  if (!user) return <Navigate to="/login" replace />;
 
-export default ProtectedRoute;
+  return children ? children : <Outlet />;
+}
